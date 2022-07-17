@@ -13,10 +13,15 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] List<GameObject> gameObjPlayers = new List<GameObject>();
     
-    [SerializeField] List<TextMeshProUGUI> lifeTextsPlayers = new List<TextMeshProUGUI>();
-    [SerializeField] List<TextMeshProUGUI> PointsTextsPlayers = new List<TextMeshProUGUI>();
-    [SerializeField] List<TextMeshProUGUI> RollDicePlayers = new List<TextMeshProUGUI>();
+    [SerializeField] List<TextMeshProUGUI> lifeTextsPlayersText = new List<TextMeshProUGUI>();
+    [SerializeField] List<TextMeshProUGUI> PointsTextsPlayersText = new List<TextMeshProUGUI>();
+    [SerializeField] List<TextMeshProUGUI> RollDicePlayersText = new List<TextMeshProUGUI>();
+    [SerializeField] List<TextMeshProUGUI> BetPlayersText = new List<TextMeshProUGUI>();
     
+    [SerializeField] GameObject betModal;
+    [SerializeField] TextMeshProUGUI betInput;
+
+
     public List<int> playersRoundPoints = new List<int>();
 
     int[] playersPoints;
@@ -25,6 +30,8 @@ public class GameManager : MonoBehaviour
 
     bool[] playersAlive;
     bool[] playersSelectedBet;
+
+    int turns;
 
     public int[] playersBet;
 
@@ -43,8 +50,37 @@ public class GameManager : MonoBehaviour
     void RoundStart()
     {
         PlayersAliveVerification();
-        state = RoundState.PLAYERTURN;
+        betModal.SetActive(true);
+        
 
+    }
+
+    int ToInt(string t)
+    {
+        int result;
+        int.TryParse(t, out result);
+        return result;
+    }
+
+    public void SetBet()
+    {
+        
+        //playersBet[0] = ToInt(betInput.GetComponent<TextMeshProUGUI>().text);
+        int.TryParse(betInput.GetComponent<TextMeshProUGUI>().text,out playersBet[0]);
+        Debug.Log(playersBet[0]);
+        Debug.Log(int.TryParse(betInput.GetComponent<TextMeshProUGUI>().text + "", out playersBet[0]));
+        
+        
+        
+        for (int i = 1; i < 5; i++)
+            playersBet[i] = Roll(Random.Range(0, 4));
+
+        
+        for (int i = 0; i < 5; i++)
+            BetPlayersText[i].text = playersBet[i].ToString();
+
+        betModal.SetActive(false);
+        state = RoundState.PLAYERTURN;
     }
 
     private void PlayersAliveVerification()
@@ -73,7 +109,7 @@ public class GameManager : MonoBehaviour
             playersRollResult[i] = Roll(Random.Range(0, 2));
 
         for (int i = 0; i < 5; i++)
-            RollDicePlayers[i].text = playersRollResult[i].ToString();
+            RollDicePlayersText[i].text = playersRollResult[i].ToString();
         
         yield return new WaitForSeconds(1f);
         
@@ -108,6 +144,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameStartSetup()
     {
+        turns = 4;
         playersLife = new int[5] { 3, 3, 3, 3, 3 };
         playersAlive = new bool[5] {true,true, true, true, true};
         playersBet = new int[5] {0,0,0,0,0};
@@ -115,19 +152,20 @@ public class GameManager : MonoBehaviour
         playersRollResult = new int[5] {0,0,0,0,0};
         playersSelectedBet = new bool[5] {false, false, false, false, false };
 
-        for (int player = 0; player < lifeTextsPlayers.Count; player++)
+        for (int player = 0; player < lifeTextsPlayersText.Count; player++)
         {
-            lifeTextsPlayers[player].text = playersLife[player].ToString();
+            lifeTextsPlayersText[player].text = playersLife[player].ToString();
         }
 
-        for (int player = 0; player < lifeTextsPlayers.Count; player++)
+        for (int player = 0; player < lifeTextsPlayersText.Count; player++)
         {
-            lifeTextsPlayers[player].text = playersLife[player].ToString();
+            lifeTextsPlayersText[player].text = playersLife[player].ToString();
         }
 
         yield return new WaitForSeconds(0.2f);
 
-        state = RoundState.PLAYERTURN;
+        
+
         RoundStart();
 
     }
@@ -147,7 +185,7 @@ public class GameManager : MonoBehaviour
         playersPoints[winnerID]++;
 
         for (int i = 0; i < 5; i++)
-            PointsTextsPlayers[i].text = playersPoints[i].ToString();
+            PointsTextsPlayersText[i].text = playersPoints[i].ToString();
         state = RoundState.PLAYERTURN;
     }
 
