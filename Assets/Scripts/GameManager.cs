@@ -112,6 +112,7 @@ public class GameManager : MonoBehaviour
         playersAlive = new bool[5] {true,true, true, true, true};
         playersBet = new int[5] {0,0,0,0,0};
         playersPoints = new int[5] {0,0,0,0,0};
+        playersRollResult = new int[5] {0,0,0,0,0};
         playersSelectedBet = new bool[5] {false, false, false, false, false };
 
         for (int player = 0; player < lifeTextsPlayers.Count; player++)
