@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
         state = RoundState.ENEMYTURN;
         
         for (int i = 1; i < 5; i++)
-            playersRollResult[i] = Roll(Random.Range(0, 2));
+            playersRollResult[i] = Roll(Random.Range(0, 3));
 
         for (int i = 0; i < 5; i++)
             RollDicePlayersText[i].text = playersRollResult[i].ToString();
