@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] List<TextMeshProUGUI> BetPlayersText = new List<TextMeshProUGUI>();
     
     [SerializeField] GameObject betModal;
+    [SerializeField] GameObject winModal;
+    [SerializeField] GameObject loseModal;
     [SerializeField] TextMeshProUGUI betInput;
 
 
@@ -29,9 +31,9 @@ public class GameManager : MonoBehaviour
     int[] playersLife;
 
     bool[] playersAlive;
-    bool[] playersSelectedBet;
 
-    int turns;
+    int MaxRound;
+    int turn;
 
     public int[] playersBet;
 
@@ -73,7 +75,7 @@ public class GameManager : MonoBehaviour
         
         
         for (int i = 1; i < 5; i++)
-            playersBet[i] = Roll(Random.Range(0, 4));
+            playersBet[i] = Random.Range(0, 3);
 
         
         for (int i = 0; i < 5; i++)
@@ -144,13 +146,16 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameStartSetup()
     {
-        turns = 4;
-        playersLife = new int[5] { 3, 3, 3, 3, 3 };
+        MaxRound = 4;
+        playersLife = new int[5] { 1, 1, 1, 1, 1 };
         playersAlive = new bool[5] {true,true, true, true, true};
         playersBet = new int[5] {0,0,0,0,0};
         playersPoints = new int[5] {0,0,0,0,0};
         playersRollResult = new int[5] {0,0,0,0,0};
-        playersSelectedBet = new bool[5] {false, false, false, false, false };
+        winModal.SetActive(false);
+        loseModal.SetActive(false);
+        betModal.SetActive(false);
+
 
         for (int player = 0; player < lifeTextsPlayersText.Count; player++)
         {
@@ -184,17 +189,29 @@ public class GameManager : MonoBehaviour
         }
         playersPoints[winnerID]++;
 
+            
+
+
         for (int i = 0; i < 5; i++)
             PointsTextsPlayersText[i].text = playersPoints[i].ToString();
+
+        turn++;
         state = RoundState.PLAYERTURN;
+        if (turn >= MaxRound)
+        {
+            for (int i = 0; i < 5; i++)
+                if(playersBet[i] != playersPoints[i] ) playersLife[i]--;
+            if (playersLife[0] > 0) WinGame();
+            else GameOver();
+        }
     }
 
-    void RoundEnd()
+    private void WinGame()
     {
-        if (playersLife[0] <= 0)
-        {
-            GameOver();
-        }
+        state = RoundState.WON;
+ 
+        winModal.SetActive(true);
+
     }
     public void DiceRoll()
     {
@@ -205,6 +222,7 @@ public class GameManager : MonoBehaviour
     }
     private void GameOver()
     {
-
+        state = RoundState.LOST;
+        loseModal.SetActive(true);
     }
 }
